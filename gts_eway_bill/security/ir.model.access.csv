@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-ewaybill_transporter, eway_transporter,model_eway_transportation,group_ebill_user,1,1,1,0
-ewaybill_transporter_sale_user, eway_transporter,sale.model_sale_order,group_ebill_user,1,1,1,0
-ewaybill_transporter_manager, eway_transporter,model_eway_transportation,group_ebill_manager,1,1,1,0
-ewaybill_transporter_manager, eway_transporter,model_eway_transportation,group_ebill_manager,1,1,1,0
-ewaybill_unit_qty_manager, unit_quantity_code,model_unit_quantity_code,group_ebill_manager,1,1,1,0
-ewaybill_configuration_manager,eway_configuration,model_eway_configuration,group_ebill_manager,1,1,1,0
