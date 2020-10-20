@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_update_consolidate" model="ir.ui.view">
+        <field name="name">consolidate.bill.form</field>
+        <field name="model">consolidate.bill</field>
+        <field name="arch" type="xml">
+            <form string="Select Invoice Type" modifiers="{}">
+                <center modifiers="{}">
+                    <field name="transportation_mode" required="1" options="{'horizontal': true}" class="oe_edit_only" widget="radio" modifiers="{'required':true}"/>
+                </center>
+                <group col="4" colspan="2" modifiers="{}">
+                    <field name="transporter_id" required="1" options="{'no_create': True}" on_change="1" can_create="true" can_write="true" modifiers="{'required':true}"/>
+                    <field name="trans_id" modifiers="{}"/>
+                </group>
+                <group col="6" colspan="2" modifiers="{}">
+                    <field name="state_id" required="1" options="{'no_create': True}" can_create="true" can_write="true" modifiers="{'required':true}"/>
+                    <field name="city" required="1" modifiers="{'required':true}"/>
+                    <field name="vehicle_no" required="1" modifiers="{'required':true}"/>
+                </group>
+                <group modifiers="{}">
+                    <field name="ewaybills_order_ids" nolabel="1" domain="[('consolidate_eway','=',False),('ewaybill_no','!=','')]" can_create="true" can_write="true" modifiers="{}"/>
+                </group>
+                <footer modifiers="{}">
+                    <button name="generate_bill" class="btn-success" icon="fa-code" string="Generate Bill" type="object" modifiers="{}" options="{}"/>
+                    <button string="Cancel" class="btn-danger" special="cancel" icon="fa-ban" modifiers="{}" options="{}"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_consolidate" model="ir.actions.act_window">
+        <field name="name">Consolidate Bill</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">consolidate.bill</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

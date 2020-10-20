@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_orders_gts" model="ir.actions.act_window">
+        <field name="name">Sales Orders</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="context">{}</field>
+        <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),('generate_ewaybill', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Create a Quotation, the first step of a new sale.
+            </p>
+            <p>
+                Once the quotation is confirmed, it becomes a sales order.
+                You'll be able to invoice it and collect payments.
+                From the <i>Sales Orders</i> menu, you can track delivery
+                orders or services.
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sale_order_form_inherit">
+        <field name="name">sale.order.margin.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="generate_ewaybill"/>
+            </xpath>
+            <xpath expr="//header" position="after">
+                <field name="logs_details" readonly="1"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="generate_eway" string="Generate Eway" type="object"/>
+                <button name="%(action_cancel_eway_bill)d" string="Cancel Way" type="action"/>
+                <button name="%(action_view_consolidate)d" string="Consolidate Eway" type="action"/>
+            </xpath>
+            <xpath expr="//page[2]" position="after">
+
+                <page string="E-Way Bill Details" attrs="{'invisible': [('generate_ewaybill', '=', False)]}"
+                      modifiers="{'invisible':[['generate_ewaybill','=',false]]}">
+                    <separator string="Transportation Details" modifiers="{}"/>
+                    <group modifiers="{}">
+                        <group modifiers="{}">
+                            <field name="eway_source" can_create="true" can_write="true" modifiers="{}"/>
+                            <field name="supply_type" attrs="{'required': [('generate_ewaybill', '=', True)]}"
+                                   modifiers="{'required':[['generate_ewaybill','=',true]]}"/>
+                            <field name="document_type" attrs="{'required': [('generate_ewaybill', '=', True)]}"
+                                   modifiers="{'required':[['generate_ewaybill','=',true]]}"/>
+                            <field name="doc_date"/>
+                            <field name="bill_status" invisible="1"/>
+                            <field name="sub_type_desc"
+                                   attrs="{'required': [('generate_ewaybill', '=', True), ('document_type', '=', 'OTH')]}"/>
+                            <field name="transportation_distance"
+                                   attrs="{'required': [('generate_ewaybill', '=', True)]}"
+                                   modifiers="{'required':[['generate_ewaybill','=',true]]}"/>
+                        </group>
+                        <group modifiers="{}">
+                            <field name="eway_destination" can_create="true" can_write="true" modifiers="{}"/>
+                            <field name="sub_supply_type" attrs="{'required': [('generate_ewaybill', '=', True)]}"
+                                   modifiers="{'required':[['generate_ewaybill','=',true]]}"/>
+                            <field name="transportation_mode" attrs="{'required': [('generate_ewaybill', '=', True)]}"
+                                   modifiers="{'required':[['generate_ewaybill','=',true]]}"/>
+                            <field name="transporter_id" options="{'no_create': True}" on_change="1" can_create="true"
+                                   can_write="true" modifiers="{}"/>
+                            <field name="trans_id" modifiers="{}"/>
+                            <field name="transporter_doc_no"
+                                   attrs="{'required': [('generate_ewaybill', '=', True),('transportation_mode', '!=', '1')]}"/>
+                            <field name="transportation_date"
+                                   attrs="{'required': [('generate_ewaybill', '=', True),('transportation_mode', '!=', '1')]}"/>
+                            <field name="vehicle_type" attrs="{'required': [('generate_ewaybill', '=', True)]}"/>
+                        </group>
+                        <group col="4" colspan="1" modifiers="{}">
+                            <field name="vehicle_no"
+                                   attrs="{'required': ['|',('transportation_mode', '=', '1'), ('trans_id', '=', '')], 'readonly': [('ewaybill_no', 'not in', ['', False])]}"
+                                   modifiers="{'readonly':[['ewaybill_no','not in',['',false]]],'required':[['transportation_mode','=','1'],['trans_id','=','']]}"/>
+                            <button name="%(action_view_update_vehicle)d" string="Update Vehicle No." type="action"
+                                    attrs="{'invisible': [('ewaybill_no', '=', False)]}"
+                                    class="btn-success" icon="fa-car" groups="gts_eway_bill.group_ebill_manager"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="E-Way Bill Details">
+                            <field name="ewaybill_no" readonly="1"/>
+                            <field name="eway_bill_date" readonly="1"/>
+                            <field name="valid_ebill_date" readonly="1"/>
+                        </group>
+                        <group string="Consolidate E-Way Bill Details">
+                            <field name="consolidate_eway" readonly="1"/>
+                            <field name="conslidate_ebill_date" readonly="1"/>
+                        </group>
+                        <group string="Bill Cancel Details">
+                            <field name="cancel_date" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_date_inherit" model="ir.ui.view">
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="ewaybill_no"/>
+            </field>
+        </field>
+    </record>
+
+    <menuitem id="gst_orders" name="Gst Orders" parent="gst_ewaybill" sequence="1"/>
+    <menuitem id="menu_gts_ordes" parent="gst_orders" action="action_orders_gts"/>
+
+</odoo>
